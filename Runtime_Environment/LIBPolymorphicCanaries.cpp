@@ -237,7 +237,6 @@ fork(void)
   typedef pid_t (*fptr) (void);
   static fptr __sys_fork = NULL;
   pid_t pid;
-
   /* get the actual (glibc) fork(2) */
   if (unlikely(!__sys_fork &&
         !(__sys_fork = (fptr) dlsym(RTLD_NEXT, "fork")))) {
@@ -268,3 +267,4 @@ setup_redundantguard(void)
 
 
 }
+

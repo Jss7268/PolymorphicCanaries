@@ -22,6 +22,8 @@
 #define __POLYMORPHICCANARIES_H__
 
 #include "gcc-plugin.h"
+#include "memmodel.h"
+#include "context.h"
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"

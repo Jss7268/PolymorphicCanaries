@@ -1,7 +1,7 @@
 CXX		= g++
 GCCPLUGINS_DIR	= $(shell $(CXX) -print-file-name=plugin)
 CXXFLAGS	= -I$(GCCPLUGINS_DIR)/include -shared -fPIC -O2 -fno-rtti -Wall
-ENV_CXXFLAGS	= -Wl,--no-as-needed -shared -fPIC -O2 -Wall -ldl -lpthread 
+ENV_CXXFLAGS	= -Wl,--no-as-needed -shared -fPIC -O2 -Wall -ldl -lpthread -fno-stack-protector
 
 # do not make changes below this line
 
