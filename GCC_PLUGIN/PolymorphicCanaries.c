@@ -23,7 +23,7 @@
 # include <stdlib.h>
 #include<iostream>
 #if DEBUG_INSN
-
+#define UNSPEC_SP_TLS_TEST (103)
 static FILE *flog = NULL;
 
 /*
@@ -279,10 +279,10 @@ canary_pop(rtx *insn)
     r3 = "%%edx";
   }
 
-  emit_insn_before(gen_rtx_SET(DImode,
+  emit_insn_before(gen_rtx_SET(/*DImode,*/
                                      creg,
                                      canary_addr),
-                         *insn);
+                         (rtx_insn *)*insn);
 
   /* pop canary from shadow stack */
   movstr = "";
@@ -305,8 +305,8 @@ canary_pop(rtx *insn)
                             rtvec_alloc(0),
                             expand_location(RTL_LOCATION(*insn)).line);
 
-  emit_insn_after(as, *insn);
-  delete_insn(*insn);
+  emit_insn_after(as, (rtx_insn *)*insn);
+  delete_insn((rtx_insn *)*insn);
   return true;
 }
 
@@ -331,7 +331,7 @@ execute_redundantguard(void)
 #endif
 
   /* modify canary upon canary push and modify check upon pop*/
-  for (insn=get_insns(); insn; insn=NEXT_INSN(insn)) {
+  for (insn=get_insns(); insn; insn=NEXT_INSN((rtx_insn *) insn)) {
     commitlog(insn, "INSN\n");
 
     /* ignore assembly */
@@ -353,7 +353,7 @@ execute_redundantguard(void)
   return SUCCESS;
 }
 
-#if (GCCPLUGIN_VERSION_MAJOR == 4) && (GCCPLUGIN_VERSION_MINOR == 9)
+#if (GCCPLUGIN_VERSION_MAJOR > 4) || ((GCCPLUGIN_VERSION_MAJOR >= 4) && (GCCPLUGIN_VERSION_MINOR >= 9))
 namespace {
 
 const pass_data pass_data_redundantguard =
@@ -361,8 +361,8 @@ const pass_data pass_data_redundantguard =
   RTL_PASS,      /* type */
   NAME,          /* name */
   OPTGROUP_NONE, /* optinfo_flags */
-  false,         /* has gate */
-  true,          /* has execute */
+  //false,         /* has gate */
+  //true,          /* has execute */
   TV_NONE,       /* tv_id */
   PROP_rtl,      /* properties_required */
   0,             /* properties_provided */
@@ -429,7 +429,7 @@ plugin_init(struct plugin_name_args *plugin_info,
   if (!plugin_default_version_check(version, &gcc_version))
     return FAILURE;
 
-#if (GCCPLUGIN_VERSION_MAJOR == 4) && (GCCPLUGIN_VERSION_MINOR == 9)
+#if (GCCPLUGIN_VERSION_MAJOR > 4) || ((GCCPLUGIN_VERSION_MAJOR >= 4) && (GCCPLUGIN_VERSION_MINOR >= 9))
   pass_info.pass = make_pass_redundantguard(g);
 #else
   pass_info.pass = &redundantguard.pass;
